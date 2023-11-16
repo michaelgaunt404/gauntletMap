@@ -8,7 +8,7 @@
 #' @importFrom sf st_coordinates
 #' @export
 #' @examples
-#'mapview::breweries %>%
+#' mapview::breweries %>%
 #'  st_extract_coords()
 #'
 st_extract_coords = function(spatial_object){
