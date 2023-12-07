@@ -29,7 +29,7 @@ make_honeycomb_counts = function(data, map_back_crs = 4326
   temp = st_join(area_honeycomb_grid, data %>%
                    mutate(flag = 1)) %>%
     mutate(flag = replace_na(flag, 0)) %>%
-    st_drop_geometry() %>%
+    sf::st_drop_geometry() %>%
     group_by(grid_id) %>%
     summarise(count = sum(flag), .groups = "drop")
 

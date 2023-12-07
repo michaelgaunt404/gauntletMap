@@ -50,7 +50,7 @@ st_true_midpoint = function(sf_object, crs = 2781){
     st_coordinates() %>%
     data.frame() %>%
     merge(sf_object_linestring %>%
-            st_drop_geometry(),
+            sf::st_drop_geometry(),
           by.x = "L1", by.y = "linestring_id") %>%
     group_by(merge_id) %>%
     mutate(n = ceiling(n()/2),
@@ -60,7 +60,7 @@ st_true_midpoint = function(sf_object, crs = 2781){
     select(X, Y, merge_id)
 
   temp %>%
-    st_drop_geometry() %>%
+    sf::st_drop_geometry() %>%
     merge(coords_extract,
           by = "merge_id") %>%
     st_as_sf(coords = c("X", "Y"), crs = 4326)

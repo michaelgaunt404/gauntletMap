@@ -23,7 +23,7 @@
 #' @importFrom dplyr bind_cols
 #' @importFrom dplyr rename
 #' @importFrom dplyr row_number
-#' @importFrom dplyr st_drop_geometry
+#' @importFrom sf st_drop_geometry
 #'
 #' @examples
 #' # Convert LineString to sampled points
@@ -43,7 +43,7 @@ st_line_sample_to_points = function(sf_object, samp_dist = 100, crs){
     st_transform(4326) %>%
     st_as_sf() %>%
     bind_cols(sf_object_linestring %>%
-                st_drop_geometry() %>%
+                sf::st_drop_geometry() %>%
                 select(shape_id)) %>%
     st_cast("POINT") %>%
     mutate(index = row_number()) %>%

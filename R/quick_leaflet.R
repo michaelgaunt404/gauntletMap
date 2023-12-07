@@ -17,7 +17,6 @@
 #' @importFrom leaflet addTiles addCircleMarkers addPolylines addPolygons
 #' @import dplyr
 #' @importFrom magrittr %>%
-#' @importFrom maps::map
 quick_leaflet = function(data, markers = F, lines = F, polys = F){
   data %>%
     leaflet::leaflet() %>%

@@ -10,8 +10,6 @@
 #' @examples
 #' st_crs_remind()
 #'
-#' @importFrom stats rbind
-#'
 #' @export
 st_crs_remind_me = function(){
   df = data.frame(rbind(

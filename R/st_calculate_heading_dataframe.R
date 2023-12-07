@@ -14,7 +14,7 @@
 #' @examples
 #' \dontrun{
 #' # Example usage
-#' result_sf <- sf_calculate_heading_dataframe(input_sf, "start_lat", "start_lon", "end_lat", "end_lon", floor_divide = 5)
+#' result_sf <- st_calculate_heading_dataframe(input_sf, "start_lat", "start_lon", "end_lat", "end_lon", floor_divide = 5)
 #' }
 #'
 #' @importFrom sf st_set_geometry
@@ -22,7 +22,7 @@
 #' @importFrom gauntlet floor_divide
 #'
 #' @export
-sf_calculate_heading_dataframe <- function(df, startLatCol, startLonCol, endLatCol, endLonCol
+st_calculate_heading_dataframe <- function(df, startLatCol, startLonCol, endLatCol, endLonCol
                                            ,floor_divide = 1) {
   # Convert degrees to radians
   df$lat1_rad <- df[[startLatCol]] * pi / 180
