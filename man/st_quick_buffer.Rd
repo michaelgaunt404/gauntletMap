@@ -51,4 +51,5 @@ curved_line = st_sfc(
 mapview::mapview(curved_line) +
   (quick_buffer(curved_line, radius = 1000) \%>\%
      mapview::mapview())
+
 }

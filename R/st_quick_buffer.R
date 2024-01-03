@@ -12,6 +12,7 @@
 #' @param joinStyle the style of the line joints, defaults to "ROUND"
 #'
 #' @return a spatial object representing the buffer
+#' @export
 #'
 #' @examples
 #' # Load required libraries
@@ -30,6 +31,7 @@
 #' mapview::mapview(curved_line) +
 #'   (quick_buffer(curved_line, radius = 1000) %>%
 #'      mapview::mapview())
+#'
 st_quick_buffer = function(geo_data, to = 4326, with = 2781, radius = NA
                            ,endCapStyle = "ROUND"
                            ,joinStyle = "ROUND"){
