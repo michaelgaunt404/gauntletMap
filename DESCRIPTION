@@ -1,12 +1,28 @@
-Package: gauntletMap
 Type: Package
-Title: What the Package Does (Title Case)
+Package: gauntletMap
+Title: GIS helper functions
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Mike Gaunt
+Maintainer: The package maintainer <mike.gaunt.404@gmail.com>
+Description: This package contains a number of general purpose helper
+    functions used for GIS and mapping workflows that Mike Gaunt has
+    created overtime. I generally use them through out my project work, if
+    we are collaborating on a project you will likely need to download
+    this package.
+License: MIT + file LICENSE
+Imports: 
+    dplyr (>= 1.1.4),
+    gauntlet,
+    janitor (>= 2.2.0),
+    leaflet (>= 2.2.1),
+    leafpop (>= 0.1.0),
+    magrittr (>= 2.0.3),
+    mapedit (>= 0.6.0),
+    mapview (>= 2.11.2),
+    purrr (>= 1.0.2),
+    sf (>= 1.0.15),
+    tigris (>= 2.0.4),
+    viridis (>= 0.6.4)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3

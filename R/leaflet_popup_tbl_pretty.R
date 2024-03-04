@@ -18,7 +18,7 @@
 #' @importFrom leafpop popupTable
 #' @importFrom janitor clean_names
 #' @importFrom sf st_set_geometry
-#' @importFrom dplyr %>%
+#' @importFrom magrittr %>%
 #'
 #' @export
 leaflet_popup_tbl_pretty = function(data){
