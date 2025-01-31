@@ -7,7 +7,12 @@
 #' @param rad_sm Numeric. The radius for the smaller buffer.
 #' @param nm A string indicating the name of the buffer. Defaults to NULL.
 #' @return A list with two elements: a background buffer and a difference buffer.
+#'
+#' @importFrom sf st_as_sf st_difference st_union
+#'
+#' @export
 #' @examples
+#' \dontrun{
 #' curved_line = st_sfc(
 #'   st_linestring(
 #'     rbind(
@@ -23,11 +28,8 @@
 #'   st_self_buffer(rad_bg = 1000, rad_sm = 50, nm = "arbitary_name") %>%
 #'   .[[2]] %>%
 #'   mapview::mapview()
-#' @importFrom sf st_as_sf st_difference st_union
-#' @export
 #'
-#' @keywords spatial
-#' @seealso \code{\link{st_buffer}}, \code{\link{st_difference}}, \code{\link{st_as_sf}}, \code{\link{st_union}}
+#' }
 st_self_buffer = function(spatial_object, rad_bg = NA, rad_sm = NA, nm = NULL){
 
   on_bg = spatial_object %>%

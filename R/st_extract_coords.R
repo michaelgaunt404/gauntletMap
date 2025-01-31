@@ -8,9 +8,11 @@
 #' @importFrom sf st_coordinates
 #' @export
 #' @examples
+#' \dontrun{
 #' mapview::breweries %>%
 #'  st_extract_coords()
 #'
+#' }
 st_extract_coords = function(spatial_object){
   spatial_object %>%
     mutate(lon = st_coordinates(geometry)[,1]

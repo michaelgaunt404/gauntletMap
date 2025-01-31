@@ -6,7 +6,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' #none
+#' }
 st_make_bounding_box = function(base_geo){
   stopifnot("CRS must be 4326, please convert..." = (st_crs(base_geo)$input == "EPSG:4326"))
 
