@@ -11,12 +11,14 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' mapview::breweries %>%
 #' quick_leaflet(markers = TRUE)
 #'
 #' @importFrom leaflet addTiles addCircleMarkers addPolylines addPolygons
 #' @import dplyr
 #' @importFrom magrittr %>%
+#' }
 quick_leaflet = function(data, markers = F, lines = F, polys = F){
   data %>%
     leaflet::leaflet() %>%

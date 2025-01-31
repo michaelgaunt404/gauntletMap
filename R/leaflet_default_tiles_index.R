@@ -5,10 +5,12 @@
 #'
 #' @return A character vector of commonly used Leaflet tile names.
 #'
+#' @export
 #' @examples
+#' \dontrun{
 #' leaflet_default_tiles_index()
 #'
-#' @export
+#' }
 leaflet_default_tiles_index = function(){
   c("OSM (default)", "Esri", "CartoDB")
 }
