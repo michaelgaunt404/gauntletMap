@@ -30,8 +30,10 @@ an SF object (multipolygon) with counts per honeycomb unit
 Spatially aggregate spatial data into counts via honeycombs or squares.
 }
 \examples{
+\dontrun{
 mapview::breweries \%>\%
  make_honeycomb_counts(honey_type = T) \%>\%
 filter(count > 0) \%>\%
  mapview::mapview(zcol = "count")
+ }
 }

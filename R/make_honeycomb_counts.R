@@ -10,10 +10,12 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #'mapview::breweries %>%
 #'  make_honeycomb_counts(honey_type = T) %>%
 #' filter(count > 0) %>%
 #'  mapview::mapview(zcol = "count")
+#'  }
 make_honeycomb_counts = function(data, map_back_crs = 4326
                                  ,honey_crs = 2285, honey_dim = 10000, honey_type = F){
 

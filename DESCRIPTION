@@ -11,18 +11,22 @@ Description: This package contains a number of general purpose helper
     this package.
 License: MIT + file LICENSE
 Imports: 
+    data.table,
     dplyr (>= 1.1.4),
     gauntlet,
+    igraph,
     janitor (>= 2.2.0),
     leaflet (>= 2.2.1),
     leafpop (>= 0.1.0),
+    lwgeom,
     magrittr (>= 2.0.3),
     mapedit (>= 0.6.0),
     mapview (>= 2.11.2),
     purrr (>= 1.0.2),
     sf (>= 1.0.15),
+    stringr,
     tigris (>= 2.0.4),
     viridis (>= 0.6.4)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
