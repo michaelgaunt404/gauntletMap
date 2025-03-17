@@ -14,6 +14,8 @@ This function returns a character vector containing the names of commonly used L
 tiles, including "OSM (default)," "Esri," and "CartoDB."
 }
 \examples{
+\dontrun{
 leaflet_default_tiles_index()
 
+}
 }

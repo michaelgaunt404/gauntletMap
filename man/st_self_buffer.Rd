@@ -22,6 +22,7 @@ A list with two elements: a background buffer and a difference buffer.
 Use an object and make a buffer around itself. Works well if you want to isolate an object but can only do it spatially.
 }
 \examples{
+\dontrun{
 curved_line = st_sfc(
   st_linestring(
     rbind(
@@ -37,8 +38,6 @@ curved_line \%>\%
   st_self_buffer(rad_bg = 1000, rad_sm = 50, nm = "arbitary_name") \%>\%
   .[[2]] \%>\%
   mapview::mapview()
+
 }
-\seealso{
-\code{\link{st_buffer}}, \code{\link{st_difference}}, \code{\link{st_as_sf}}, \code{\link{st_union}}
 }
-\keyword{spatial}

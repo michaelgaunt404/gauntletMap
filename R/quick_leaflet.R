@@ -8,16 +8,17 @@
 #' @param polys A boolean value indicating whether to display polygons on the map. The default value is false.
 #'
 #' @return A leaflet map.
+#'
+#' @importFrom leaflet addTiles addCircleMarkers addPolylines addPolygons
+#' @import dplyr
+#' @importFrom magrittr %>%
+#'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' mapview::breweries %>%
 #' quick_leaflet(markers = TRUE)
-#'
-#' @importFrom leaflet addTiles addCircleMarkers addPolylines addPolygons
-#' @import dplyr
-#' @importFrom magrittr %>%
 #' }
 quick_leaflet = function(data, markers = F, lines = F, polys = F){
   data %>%

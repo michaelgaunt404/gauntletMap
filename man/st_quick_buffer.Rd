@@ -35,6 +35,7 @@ By default, the buffer is created using a projected coordinate reference system 
 and then transformed back to a geographic CRS.
 }
 \examples{
+\dontrun{
 # Load required libraries
 library(sf)
 curved_line = st_sfc(
@@ -52,4 +53,5 @@ mapview::mapview(curved_line) +
   (quick_buffer(curved_line, radius = 1000) \%>\%
      mapview::mapview())
 
+}
 }

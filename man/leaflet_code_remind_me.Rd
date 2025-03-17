@@ -13,6 +13,8 @@ None (prints to console).
 This function prints a basic leaflet map template that can be used as a starting point for building maps.
 }
 \examples{
+\dontrun{
 leaflet_code_remind_me()
 
+}
 }

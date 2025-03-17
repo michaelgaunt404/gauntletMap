@@ -20,6 +20,7 @@ the column are rescaled to a specified maximum value. It's a general-purpose
 function, but it's commonly used to control aesthetic controls like line widths, point sizes, or color scales in Leaflet maps.
 }
 \examples{
+\dontrun{
 # Rescale a numeric column to have a maximum value of 10
 counties <- tigris::tracts(state = "WA", county = "king")
 counties <- counties \%>\%
@@ -29,4 +30,5 @@ counties <- counties \%>\%
 # Create a map using mapview to visualize the rescaled data
 sf::st_centroid(counties) \%>\% mapview(cex = "ALAND_rscld", z = "ALAND_rscld")
 
+}
 }

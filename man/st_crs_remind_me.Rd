@@ -16,6 +16,8 @@ A data frame with columns:
 This function creates a data frame containing information about different EPSG codes commonly used in mapping applications. The data frame includes columns for the name of the coordinate reference system (CRS), the corresponding EPSG code, and the unit of measurement associated with the CRS.
 }
 \examples{
+\dontrun{
 st_crs_remind()
 
+}
 }
