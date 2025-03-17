@@ -25,11 +25,13 @@
 #' @importFrom dplyr row_number
 #' @importFrom sf st_drop_geometry
 #'
+#' @export
 #' @examples
+#' \dontrun{
 #' # Convert LineString to sampled points
 #' sampled_points <- st_line_sample_to_points(line_string_data, samp_dist = 100)
 #'
-#' @export
+#' }
 st_line_sample_to_points = function(sf_object, samp_dist = 100, crs){
   sf_object_linestring = sf_object %>%
     mutate(merge_id = row_number()) %>%

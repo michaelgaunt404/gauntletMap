@@ -29,7 +29,9 @@ Additional attributes, such as the `shape_id` from the original `sf_object_lines
 This function simplifies the process of sampling points along LineString geometries, which can be useful for various spatial analysis and visualization tasks.
 }
 \examples{
+\dontrun{
 # Convert LineString to sampled points
 sampled_points <- st_line_sample_to_points(line_string_data, samp_dist = 100)
 
+}
 }

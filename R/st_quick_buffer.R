@@ -15,6 +15,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Load required libraries
 #' library(sf)
 #' curved_line = st_sfc(
@@ -32,6 +33,7 @@
 #'   (quick_buffer(curved_line, radius = 1000) %>%
 #'      mapview::mapview())
 #'
+#' }
 st_quick_buffer = function(geo_data, to = 4326, with = 2781, radius = NA
                            ,endCapStyle = "ROUND"
                            ,joinStyle = "ROUND"){

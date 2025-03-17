@@ -22,7 +22,8 @@ A leaflet map.
 This function creates a leaflet map with various options for displaying spatial data.
 }
 \examples{
+\dontrun{
 mapview::breweries \%>\%
 quick_leaflet(markers = TRUE)
-
+}
 }

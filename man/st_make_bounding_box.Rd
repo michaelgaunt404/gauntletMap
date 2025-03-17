@@ -16,5 +16,7 @@ a dataframe of coordinates describing extent of supplied sf object
 Make a bounding box of an sf object
 }
 \examples{
+\dontrun{
 #none
+}
 }

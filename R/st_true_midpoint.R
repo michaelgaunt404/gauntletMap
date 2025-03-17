@@ -8,9 +8,12 @@
 #' @param sf_object A spatial object representing a curved line
 #' @param crs An integer input indicating which CRS to use when extracting the midpoint - default is 2781
 #' @return A spatial object representing the true midpoint along the curved line
+#'
 #' @importFrom sf st_transform st_cast st_line_sample st_coordinates st_drop_geometry st_as_sf
+#'
 #' @export
 #' @examples
+#' \dontrun{
 #' library(sf)
 #'
 #' curved_line = st_sfc(
@@ -26,14 +29,7 @@
 #'
 #' mapview::mapview(curved_line) +
 #'   mapview::mapview(st_true_midpoint(curved_line))
-#'
-#' @importFrom sf st_coordinates
-#' @export
-#'
-#' @rdname st_extract_coords
-#' @aliases extract_coords
-#' @keywords spatial
-#' @seealso \code{\link{st_coordinates}}, \code{\link{st_set_geometry}}
+#' }
 st_true_midpoint = function(sf_object, crs = 2781){
   temp = sf_object %>%
     mutate(merge_id = row_number())

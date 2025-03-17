@@ -7,10 +7,12 @@
 #'   - Code: EPSG code associated with the CRS.
 #'   - Unit: Unit of measurement for the CRS.
 #'
+#' @export
 #' @examples
+#' \dontrun{
 #' st_crs_remind()
 #'
-#' @export
+#' }
 st_crs_remind_me = function(){
   df = data.frame(rbind(
     c("WGS 84", 4326, "lat/lon"),

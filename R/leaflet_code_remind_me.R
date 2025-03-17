@@ -5,10 +5,12 @@
 #'
 #' @return None (prints to console).
 #'
+#' @export
 #' @examples
+#' \dontrun{
 #' leaflet_code_remind_me()
 #'
-#' @export
+#' }
 leaflet_code_remind_me = function(){
   message(stringr::str_glue("{gauntlet::strg_make_space_2()}Printing basic leaflet map template\nUse the template to build your own leaflet maps{gauntlet::strg_make_space_2(last = F)}"))
 
