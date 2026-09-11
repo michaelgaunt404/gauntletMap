@@ -2,40 +2,64 @@
 % Please edit documentation in R/st_calculate_heading_dataframe.R
 \name{st_calculate_heading_dataframe}
 \alias{st_calculate_heading_dataframe}
-\title{Calculate Bearing for Polylines in Spatial Data Frame}
+\title{Calculate compass bearing for line features or lat/lon pairs}
 \usage{
 st_calculate_heading_dataframe(
   df,
-  startLatCol,
-  startLonCol,
-  endLatCol,
-  endLonCol,
+  startLatCol = NULL,
+  startLonCol = NULL,
+  endLatCol = NULL,
+  endLonCol = NULL,
   floor_divide = 1
 )
 }
 \arguments{
-\item{df}{A Spatial Data Frame (SF) containing start and end coordinates for polylines.}
+\item{df}{Either a plain data frame with the four lat/lon columns
+named below (column mode), or an `sf` object (geometry mode, used
+when those four arguments are left `NULL`).}
 
-\item{startLatCol}{Column name for the start latitude coordinates in the SF.}
+\item{startLatCol, startLonCol, endLatCol, endLonCol}{Character, column
+names of the start/end latitude/longitude in `df`. Leave all four
+`NULL` (the default) to compute the bearing from each feature's
+geometry instead.}
 
-\item{startLonCol}{Column name for the start longitude coordinates in the SF.}
-
-\item{endLatCol}{Column name for the end latitude coordinates in the SF.}
-
-\item{endLonCol}{Column name for the end longitude coordinates in the SF.}
-
-\item{floor_divide}{An optional parameter to divide the calculated bearings for simplicity. Default is 1.}
+\item{floor_divide}{Numeric, passed to [gauntlet::floor_divide()] to
+bucket the computed bearings -- e.g. `floor_divide = 5` rounds each
+bearing down to the nearest 5 degrees. Defaults to `1` (no
+bucketing).}
 }
 \value{
-A modified SF with an additional "bearing" attribute representing the directionality of the polylines.
+`df` with an added (or overwritten) `bearing` column,
+  0-360 degrees clockwise from north. In geometry mode, the returned
+  object is `df` reprojected to EPSG:4326 with `bearing` added; the
+  geometry column itself is left otherwise untouched.
 }
 \description{
-This function calculates the bearing or heading in degrees for polylines in a Spatial Data Frame (SF).
+Computes the compass bearing (0-360 degrees, measured clockwise from
+north) from a start point to an end point. Works two ways, depending
+on which arguments are supplied:
+}
+\details{
+* **Column mode** -- `df` is a plain data frame (or sf object) with
+  separate start/end latitude and longitude columns; pass their names
+  via `startLatCol`/`startLonCol`/`endLatCol`/`endLonCol`.
+* **Geometry mode** -- leave all four of those `NULL` (the default)
+  and pass `df` as an `sf` object instead. The bearing is computed
+  from the *first* and *last* vertex of each feature's geometry.
+  A line with more than two vertices (e.g. a 3-point polyline with a
+  bend in the middle) still just uses its endpoints -- the bend is
+  ignored for the bearing calculation.
+
+In geometry mode, `df` is reprojected to EPSG:4326 first if it isn't
+already, since the bearing formula assumes WGS84 longitude/latitude
+in degrees. An `sf` object with no CRS set will raise an error rather
+than silently assuming one.
 }
 \examples{
 \dontrun{
-# Example usage
-result_sf <- st_calculate_heading_dataframe(input_sf, "start_lat", "start_lon", "end_lat", "end_lon", floor_divide = 5)
+# --- geometry mode: bearing from each LINESTRING's first/last vertex ---
+library(sfnetworks)
+roxel
+links_with_bearing <- st_calculate_heading_dataframe(roxel)
 }
-
 }
