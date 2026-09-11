@@ -2,38 +2,66 @@
 % Please edit documentation in R/st_make_google_map_link.R
 \name{st_make_google_map_link}
 \alias{st_make_google_map_link}
-\title{Create Google Maps links from coordinate columns}
+\title{Add a clickable Google Maps search link column}
 \usage{
-st_make_google_map_link(data, coords)
+st_make_google_map_link(data, coords = NULL)
 }
 \arguments{
-\item{data}{A data frame or \code{sf} object containing coordinate columns.}
+\item{data}{A data frame, tibble, or `sf` object. If `sf`, its
+geometry column must be `POINT` (not `MULTIPOINT`, lines, or
+polygons).}
 
-\item{coords}{A character vector of length 2 giving the longitude and latitude
-column names, in that order (e.g., \code{c("lon", "lat")}).}
+\item{coords}{Character vector of length 2, giving the column names in
+`data` to use for the link, in the order Google Maps expects them:
+`coords[1]` should be the **latitude** column and `coords[2]` the
+**longitude** column (Google's query format is `lat,lng`). Swapping
+the order will silently produce a link pointing at the wrong spot.
+Ignored (and can be left `NULL`, the default) when `data` is an
+`sf` object -- coordinates are taken from the geometry column
+instead.}
 }
 \value{
-The input \code{data} with an additional column \code{gmap_link}
-  containing an \code{htmltools::HTML} object linking to Google Maps.
+`data` with an added `gmap_link` column of class `"html"`
+  (from [htmltools::HTML()]), one Google Maps search link per row. If
+  `data` was an `sf` object, the result stays an `sf` object with its
+  geometry column intact.
 }
 \description{
-Generates an HTML anchor tag linking to Google Maps for each row in a data
-frame or sf object, using longitude and latitude coordinate columns.
-This is useful for embedding clickable map links in tables, popups,
-or HTML-based outputs (e.g., Shiny, DT, Quarto).
+Builds an HTML `<a>` link to a Google Maps search for each row's
+coordinates and adds it as a new `gmap_link` column, marked as HTML
+(the same `c("html", "character")` class [htmltools::HTML()] would
+set) so it renders as a link (e.g. in a `DT`/`reactable` table or an R
+Markdown/Quarto HTML output) rather than as literal text.
 }
 \details{
-The generated links use the Google Maps Search API format:
-\url{https://www.google.com/maps/search/?api=1&query=lat,lon}.
+Note: the class is attached directly with `class<-()` rather than by
+calling `htmltools::HTML()` on the whole vector. `HTML()` concatenates
+all of its input into a *single* string -- fine for one link, but
+calling it on an n-row vector collapses all n links into one string
+and recycles that same value into every row. Attaching the class
+after building the vector with `paste0()` keeps each row's link
+separate.
 
-This function does not perform coordinate validation and assumes the
-supplied columns are numeric and in decimal degrees.
+Works two ways, depending on `data`:
+* A plain data frame/tibble with separate latitude and longitude
+  columns -- pass their names via `coords`.
+* An `sf` object with `POINT` geometry -- leave `coords = NULL` and the
+  coordinates are read directly from the geometry column via
+  [sf::st_coordinates()].
 }
 \examples{
-\dontRun{
-breweries \%>\%
-  gauntletMap::st_extract_coords() \%>\%
-  gauntletMap::st_make_google_map_link(coords = c("lon", "lat"))
-}
+\dontrun{
+df <- data.frame(
+  site = c("A", "B", "C"),
+  lat = c(34.0522, 47.6062, 40.7484),
+  lng = c(-118.2437, -122.3321, -73.9857)
+)
 
+# plain data frame: supply the lat/lng column names
+df_with_links <- st_make_google_map_link(df, coords = c("lat", "lng"))
+
+# sf POINT object: coordinates come from the geometry column
+pts <- sf::st_as_sf(df, coords = c("lng", "lat"), crs = 4326)
+pts_with_links <- st_make_google_map_link(pts)
+}
 }
