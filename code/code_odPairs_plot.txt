@@ -1,0 +1,96 @@
+
+
+# Load required libraries
+library(tidyverse)
+library(ggplot2)
+library(mapedit)
+install.packages(mapedit)
+
+set.seed(123)  # for reproducibility
+
+# Create fake nodes (originsdestinations) with random coordinates within the Seattle area.
+nodes - tibble(
+  id = LETTERS[126],
+  lon = runif(26, min = -122.45, max = -122.2),
+  lat = runif(26, min = 47.5, max = 47.75)
+) 
+  
+
+nodes_sf = nodes %% 
+  st_as_sf(coords = c(lon, lat), crs = 4326) 
+
+# Create an OD table all combinations of nodes (excluding self-links) with random flow values.
+flows - expand.grid(from = nodes$id, to = nodes$id) %% 
+  filter(from != to) %% 
+  mutate(flow = sample(150, n(), replace = TRUE))
+
+# Assign a curvature for offsetting
+# If the origin comes alphabetically before the destination, use a positive curvature;
+# otherwise use a negative curvature.
+# flows - flows %%
+#   mutate(curvature = if_else(from  to, 0.2, -0.2))
+
+# Merge node coordinates into the flows data.
+flows - flows %%
+  left_join(nodes, by = c(from = id)) %%
+  rename(lon_from = lon, lat_from = lat) %%
+  left_join(nodes, by = c(to = id)) %%
+  rename(lon_to = lon, lat_to = lat) 
+
+
+
+
+flows_lines = flows %% 
+  # .[1,] %% 
+  rowwise() %%
+  mutate(geometry = st_linestring(matrix(c(lon_from, lat_from, lon_to, lat_to), ncol = 2, byrow = TRUE)) %% 
+           st_as_text()) %%
+  ungroup() %% 
+  st_as_sf(wkt = geometry, crs = 4326) %% 
+  st_transform(crs = 4326) %% 
+  gauntletMapst_calculate_heading_dataframe(
+    lat_from, lon_from, lat_to, lon_to
+  ) %% 
+  rowwise() %%
+  mutate(
+    # Compute the offset bearing and ensure it is within [0,360)
+    offset_bearing = (bearing - 90) %% 360,
+    # Calculate new from coordinates offset by 100 meters in the offset bearing
+    offset_from = list(geospheredestPoint(c(lon_from, lat_from), offset_bearing, 50)),
+    # Calculate new to coordinates offset by 100 meters in the offset bearing
+    offset_to   = list(geospheredestPoint(c(lon_to, lat_to), offset_bearing, 50))
+  ) %%
+  ungroup() %%
+  mutate(
+    offset_lon_from = map_dbl(offset_from, 1),
+    offset_lat_from = map_dbl(offset_from, 2),
+    offset_lon_to   = map_dbl(offset_to, 1),
+    offset_lat_to   = map_dbl(offset_to, 2)
+  ) %% 
+  select(!c(offset_from, offset_to)) %% 
+  st_drop_geometry() %% 
+  select(!lon_fromoffset_bearing ) %% 
+  rowwise() %%
+  mutate(geometry = st_linestring(matrix(c(offset_lon_from, offset_lat_from, offset_lon_to, offset_lat_to), ncol = 2, byrow = TRUE)) %% 
+           st_as_text()) %%
+  ungroup() %% 
+  st_as_sf(wkt = geometry, crs = 4326)
+
+mapview(flows_lines
+        ,z = flow
+        ,lwd = flow
+        ,alpha = flow
+        # ,alpha = .2
+        ) + 
+  mapview(nodes_sf, cex = 7)
+
+
+
+
+
+
+
+
+
+
+
