@@ -17,10 +17,13 @@ gntLeaf_gen_map_layer(
   palette = "inferno",
   n_colors = 50,
   reverse = TRUE,
+  size_col = palette_col,
+  size_range = NULL,
+  radius = 6,
   fill = TRUE,
   fill_opacity = 0.7,
   color = "white",
-  weight = 1,
+  weight = NULL,
   lwd = 2,
   opacity = 0.9,
   legend = TRUE,
@@ -34,106 +37,82 @@ in the generated code (e.g. "franconia") -- NOT the object itself.}
 
 \item{palette_col}{character. Column the palette is built from.}
 
-\item{geom}{one of "point", "line", "polygon". Determines which leaflet
-add*() function is used and which argument the palette color is bound
-to (`color` for point/line, `fillColor` for polygon).}
+\item{geom}{one of "point", "line", "polygon".}
 
-\item{col_type}{one of "numeric", "factor". "numeric" emits
-`leaflet::colorNumeric()` (the original behavior). "factor" emits
-`leaflet::colorFactor()` instead -- no `n_colors` needed there, since
-colorFactor derives its color count from the domain's factor levels
-when given a named palette string, rather than from an explicit
-pre-built color vector.}
+\item{col_type}{one of "numeric", "factor".}
 
 \item{slider_cols}{character vector of columns to build filter widgets
-for. Defaults to `palette_col`. Pass `character(0)` for a layer that
-should be wrapped in SharedData but have no filters at all -- it's
-left out of the filter panel entirely.}
+for. Defaults to `palette_col`. `character(0)` for no filters.}
 
 \item{slider_types}{character vector, positionally aligned with
-`slider_cols`, giving each column's filter widget: `"n"` / `"numeric"`
--> `filter_slider()`, `"f"` / `"factor"` -> `filter_select()`. Recycled
-if shorter than `slider_cols` (so a single `"f"` applies to all of
-them). Example: `slider_cols = c("kde", "district")`, `slider_types =
-c("n", "f")` gives a numeric slider for `kde` and a select dropdown
-for `district`. If `NULL` (default), falls back per-column to
-`slider_opts[[col]]$type`, then to `col_type` when the column is
-`palette_col`, then to `"numeric"`.}
+`slider_cols`: `"n"`/`"numeric"` -> `filter_slider()`, `"f"`/`"factor"`
+-> `filter_select()`. Recycled if length 1.}
 
 \item{group}{character. Leaflet overlay group / legend group.}
 
-\item{slider_opts}{named list, keyed by column name, each element an
-optional list with `round`, `min`, `max`, `label`, `type` overrides.
-`type` works the same as `slider_types` but keyed by name instead of
-position; `slider_types` takes precedence when both are given for the
-same column.}
+\item{slider_opts}{named list, keyed by column name, each an optional list
+with `round`, `min`, `max`, `label`, `type` overrides.}
 
-\item{id_col}{character or NULL. Column for `layerId`. NULL omits it.}
+\item{id_col}{character or NULL. Column for `layerId`.}
 
-\item{palette}{character. viridis palette name, default "inferno". Used
-as a raw color vector (`viridis::{palette}(n = n_colors)`) for numeric
-columns, and as the bare palette-name string for factor columns since
-`colorFactor()` accepts viridis names directly.}
+\item{palette}{character. viridis palette name, default "inferno".}
 
-\item{n_colors}{integer, default 50. Only used when `col_type == "numeric"`.}
+\item{n_colors}{integer, default 50. Numeric palettes only.}
 
 \item{reverse}{logical, default TRUE.}
+
+\item{size_col}{character or NULL. Column that drives marker radius
+(point) or line width (line) via [rescale_vector()]. Defaults to
+`palette_col`, so size tracks color. Ignored for polygons, and dropped
+automatically when it is `palette_col` and `col_type == "factor"`.
+`NULL` turns sizing off (static `radius` / `lwd` used instead).}
+
+\item{size_range}{numeric length-2, `c(lower, upper)` passed to
+[rescale_vector()]. `NULL` (default) -> `c(3, 10)` for points,
+`c(5, 10)` for lines.}
+
+\item{radius}{numeric. Static circle radius when sizing is off.}
 
 \item{fill}{logical. Draw a fill (point/polygon only).}
 
 \item{fill_opacity}{numeric. fillOpacity (point/polygon only).}
 
-\item{color}{character. STATIC value -- for point/line this is unused
-(color there is palette-driven); for polygon it's the border stroke
-color, default "white".}
+\item{color}{character. Polygon border stroke color, default "white".}
 
-\item{weight}{numeric. Marker stroke width (point) or border width
-(polygon). Not used for lines -- see `lwd`.}
+\item{weight}{numeric or NULL. Circle stroke width (point) or border width
+(polygon). `NULL` (default) -> 0 for points (no outline), 1 for polygons.}
 
-\item{lwd}{numeric. Line width, used only when `geom == "line"`.}
+\item{lwd}{numeric. Static line width when sizing is off (line only).}
 
-\item{opacity}{numeric. Stroke/line opacity for all geometries.}
+\item{opacity}{numeric. Stroke/line opacity.}
 
 \item{legend}{logical. Add an addLegend() for this layer's palette.}
 
-\item{legend_title}{character or NULL. Defaults to a title-cased version
-of `palette_col`.}
+\item{legend_title}{character or NULL. Defaults to title-cased `palette_col`.}
 
 \item{legend_position}{character, default "bottomleft".}
 }
 \value{
-A list with `code` (palette + SharedData + filter block),
-  `marker_call` (the add*() + addLegend() chain, no leading pipe),
-  `slider_vars`, and `group`.
+A list with `code`, `marker_call`, `slider_vars`, and `group`.
 }
 \description{
 Builds the palette (`colorNumeric()`/`colorFactor()`), `SharedData` wrap,
 any `filter_slider()`/`filter_select()` widgets, the geometry-appropriate
 marker/line/polygon call, and its `addLegend()` -- all as generated code
 text, for a single dataset/layer. Combine the result with one or more
-others via [gntLeaf_gen_leaflet_map()] to assemble the full crosstalk +
-leaflet block.
+others via [gntLeaf_gen_leaflet_map()].
 }
 \examples{
 \dontrun{
-# `breweries` (points) and `franconia` (polygons) are the sample sf
-# datasets bundled with the {mapview} package, commonly used in leaflet/
-# crosstalk tutorials. This function never evaluates the actual data --
-# it only needs the object's name and column names as strings -- so
-# these calls run fine even without the datasets loaded.
-
-# numeric palette, two filters of different types on the same layer
 layer_breweries = gntLeaf_gen_map_layer(
   data_name = "breweries"
   ,palette_col = "number.of.types"
   ,geom = "point"
-  ,col_type = "numeric"
   ,slider_cols = c("number.of.types", "number.seasonal.beers")
   ,slider_types = c("n", "f")
   ,group = "BREWERIES"
 )
 
-# factor palette, no filters at all (SharedData wrap only)
 layer_franconia = gntLeaf_gen_map_layer(
   data_name = "franconia"
   ,palette_col = "district"
@@ -143,10 +122,6 @@ layer_franconia = gntLeaf_gen_map_layer(
   ,group = "DISTRICT"
 )
 
-# each layer_* is a list of generated-code pieces; combine with
-# gntLeaf_gen_leaflet_map() to print/copy the full block
-gntLeaf_gen_leaflet_map(list(layer_breweries))
-gntLeaf_gen_leaflet_map(list(layer_franconia))
 gntLeaf_gen_leaflet_map(list(layer_franconia, layer_breweries))
 }
 }

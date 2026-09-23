@@ -7,7 +7,7 @@
 gntLeaf_gen_leaflet_map(
   layers,
   height = 700,
-  base_tiles_pkg = "gauntletMap",
+  basemap_default = c("gray", "streets", "dark", "imagery"),
   widths = c(3, 9),
   clip = T
 )
@@ -16,13 +16,18 @@ gntLeaf_gen_leaflet_map(
 \item{layers}{list of lists, each the return value of
 [gntLeaf_gen_map_layer()].}
 
-\item{height}{numeric. leaflet(height = ...).}
+\item{height}{numeric. `leaflet(height = ...)`, in pixels. Default 700.}
 
-\item{base_tiles_pkg}{character, e.g. "gauntletMap".}
+\item{basemap_default}{character. Basemap shown on load; one of
+`"gray"` (default), `"streets"`, `"dark"`, `"imagery"`. Also listed
+first in the layers control.}
 
-\item{widths}{numeric length-2. bscols(widths = ...).}
+\item{widths}{numeric length-2. `bscols(widths = ...)` for the filter
+panel and map, on Bootstrap's 12-column grid. Only used when at least
+one layer has filters. Default `c(3, 9)`.}
 
-\item{clip}{logical. Copy the result to the clipboard via clipr.}
+\item{clip}{logical. Copy the result to the clipboard via clipr.
+Default `TRUE`.}
 }
 \value{
 Invisibly, the full generated code block as a single character
@@ -31,28 +36,41 @@ Invisibly, the full generated code block as a single character
 }
 \description{
 Combines one or more [gntLeaf_gen_map_layer()] results into the complete
-generated code: all layers' palette/SharedData/filter setup, the full
-`leaflet()` pipe chain (base tiles, each layer's marker/legend calls,
-layers control, mouse coordinates), and -- if any layer has filters --
-a `crosstalk::bscols()` wrapper laying out the filter panel next to the
-map. If none of the layers have any filters, `bscols()` is skipped
-entirely and the leaflet chain is emitted on its own. Prints the result
-via [base::cat()] and, when `clip = TRUE`, also copies it to the
-clipboard.
+generated code: every layer's palette/SharedData/filter setup, the full
+`leaflet()` pipe chain (Esri basemaps via [gntLeaf_add_esri_basemaps()],
+each layer's marker/legend calls, a layers control, and mouse
+coordinates), and -- if any layer has filters -- a `crosstalk::bscols()`
+wrapper laying out the filter panel next to the map. If none of the
+layers have filters, `bscols()` is skipped and the leaflet chain is
+emitted on its own.
+}
+\details{
+The generated block is always:
+\itemize{
+  \item wrapped in `{ }`, so it runs as one unit and folds in the editor;
+  \item assigned to `temp_map` (leaflet widget or `bscols()` layout);
+  \item finished with a bare `temp_map` so the map prints when run.
+}
+
+Helper calls in the output (`gntLeaf_add_esri_basemaps()`,
+`gntLeaf_esri_basemap_names()`, `rescale_vector()`) are emitted without a
+package prefix, so those functions must be loaded or sourced wherever the
+generated code is run.
+
+Prints the result via [gntLeaf_emit()] and, when `clip = TRUE`, also
+copies it to the clipboard.
 }
 \examples{
 \dontrun{
 # `breweries` (points) and `franconia` (polygons) are the sample sf
-# datasets bundled with the {mapview} package. Neither this function nor
-# gntLeaf_gen_map_layer() evaluates the actual data -- only the object
-# name and column names are used, as strings -- so these calls run fine
-# even without the datasets loaded.
+# datasets bundled with {mapview}. Neither generator evaluates the data --
+# only object and column names are used, as strings -- so these calls run
+# without the datasets loaded. Running the *generated* code does need them.
 
 layer_breweries = gntLeaf_gen_map_layer(
   data_name = "breweries"
   ,palette_col = "number.of.types"
   ,geom = "point"
-  ,col_type = "numeric"
   ,slider_cols = c("number.of.types", "number.seasonal.beers")
   ,slider_types = c("n", "f")
   ,group = "BREWERIES"
@@ -67,19 +85,23 @@ layer_franconia = gntLeaf_gen_map_layer(
   ,group = "DISTRICT"
 )
 
-# single layer, no filters -- bscols() skipped, plain leaflet chain
+# single layer, no filters -- plain leaflet chain, no bscols()
 gntLeaf_gen_leaflet_map(list(layer_franconia))
 
 # single layer with filters -- wrapped in bscols()
 gntLeaf_gen_leaflet_map(list(layer_breweries))
 
-# combined: both layers on one map, filters from either laid out together
+# combined, dark basemap, wider filter panel, no clipboard
 gntLeaf_gen_leaflet_map(
   list(layer_franconia, layer_breweries)
-  ,height = 700
-  ,base_tiles_pkg = "gauntletMap"
-  ,widths = c(3, 9)
-  ,clip = TRUE
+  ,height = 800
+  ,basemap_default = "dark"
+  ,widths = c(4, 8)
+  ,clip = FALSE
 )
 }
+}
+\seealso{
+[gntLeaf_gen_map_layer()], [gntLeaf_add_esri_basemaps()],
+  [gntLeaf_esri_basemap_names()], [gntLeaf_emit()]
 }

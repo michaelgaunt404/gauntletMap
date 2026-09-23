@@ -1,7 +1,3 @@
-# Part of the gntLeaf_* family (gntLeaf_gen_map_layer / gntLeaf_gen_leaflet_map).
-# Internal helper -- not exported, but documented since it's a real function
-# with real behavior (print + optional clipboard copy) worth explaining.
-
 #' Print (and optionally clipboard-copy) a generated code block
 #'
 #' Internal helper shared by [gntLeaf_gen_map_layer()] and
@@ -25,7 +21,7 @@
 #' .emit("leaflet::leaflet() %>% leaflet::addTiles()")
 #' .emit("leaflet::leaflet() %>% leaflet::addTiles()", clip = TRUE)
 #' }
-.emit = function(txt, clip = FALSE){
+gntLeaf_emit = function(txt, clip = FALSE){
   cat(txt, "\n")
   if(isTRUE(clip)){
     if(requireNamespace("clipr", quietly = TRUE)){
@@ -37,3 +33,9 @@
   }
   invisible(txt)
 }
+
+
+
+
+
+
