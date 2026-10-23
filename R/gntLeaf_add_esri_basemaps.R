@@ -1,4 +1,4 @@
-#' Add Esri basemaps (streets raw / grayscale / dark + imagery) to a leaflet map
+#' Add Esri basemaps (streets / light gray / dark gray / imagery) to a leaflet map
 #'
 #' Pipe-friendly helper that adds every basemap defined in
 #' [gntLeaf_esri_basemap_specs] as its own leaflet group, shows only
@@ -8,13 +8,18 @@
 #' opened from disk).
 #'
 #' Tiles come from Esri's public ArcGIS Online tile server and load without
-#' an API key, including from local `file://` HTML. The grayscale and dark
-#' variants reuse `World_Street_Map` tiles with a CSS `filter` applied
-#' through each layer's class name (see [gntLeaf_esri_basemap_specs]), so
-#' they cost no extra tile requests beyond the one layer being viewed.
+#' an API key, including from local `file://` HTML. The gray and dark
+#' options are Esri's Light Gray and Dark Gray Canvas basemaps, each drawn
+#' as an unlabeled base plus a labels (reference) layer in the same group;
+#' set `labels = FALSE` for the bare canvas. Leaflet loads tiles only for
+#' visible groups, so the hidden basemaps cost no tile requests.
 #'
-#' Max zoom: tiles are requested up to zoom 19 (`maxNativeZoom`) and
-#' upscaled to 20 (`maxZoom`) instead of going blank.
+#' Max zoom: each service is requested up to its own native zoom
+#' (`max_native` in [gntLeaf_esri_basemap_specs]) and upscaled to 20
+#' (`maxZoom`) instead of going blank.
+#'
+#' Reference labels sit in leaflet's tile pane, so data layers draw over
+#' them.
 #'
 #' Only one layers control can exist per map, and a later
 #' `addLayersControl()` call replaces this one. If you need your own control,
@@ -25,6 +30,8 @@
 #' @param default character. Basemap shown on load; one of `"streets"`
 #'   (default), `"gray"`, `"dark"`, `"imagery"` -- i.e. any name in
 #'   [gntLeaf_esri_basemap_specs].
+#' @param labels logical. Draw the reference (labels) layer on basemaps that
+#'   have one (gray, dark). Default `TRUE`.
 #' @param overlay_groups character vector or NULL. Your data layer group
 #'   names, listed as checkboxes in the same control. They may refer to
 #'   groups added later in the pipe.
@@ -42,8 +49,6 @@
 #' @export
 #'
 #' @importFrom leaflet addTiles tileOptions hideGroup addLayersControl layersControlOptions
-#' @importFrom htmlwidgets prependContent
-#' @importFrom htmltools tags
 #'
 #' @examples
 #' \dontrun{
@@ -52,10 +57,11 @@
 #'   gntLeaf_add_esri_basemaps() |>
 #'   leaflet::setView(-73.98, 40.75, zoom = 12)
 #'
-#' # gray on load, data layers in the same menu
+#' # light gray canvas on load, no labels, data layers in the same menu
 #' leaflet::leaflet() |>
 #'   gntLeaf_add_esri_basemaps(
 #'     default = "gray"
+#'     ,labels = FALSE
 #'     ,overlay_groups = c("Tracts", "Crashes")
 #'     ,collapsed = FALSE
 #'   ) |>
@@ -70,6 +76,7 @@
 gntLeaf_add_esri_basemaps = function(
     map
     ,default = "streets"
+    ,labels = TRUE
     ,overlay_groups = NULL
     ,control = TRUE
     ,position = "topright"
@@ -79,18 +86,17 @@ gntLeaf_add_esri_basemaps = function(
 
   esri = "https://server.arcgisonline.com/ArcGIS/rest/services/"
   url = function(svc) paste0(esri, svc, "/MapServer/tile/{z}/{y}/{x}")
+  attr = "Tiles &copy; Esri"
 
   for(l in gntLeaf_esri_basemap_specs){
-    map = leaflet::addTiles(
-      map, url(l$svc), group = l$name, attribution = "Tiles &copy; Esri"
-      ,options = leaflet::tileOptions(className = l$cls, maxNativeZoom = 19, maxZoom = 20)
-    )
+    opts = leaflet::tileOptions(maxNativeZoom = l$max_native, maxZoom = 20)
+    map = leaflet::addTiles(map, url(l$svc), group = l$name
+                            ,attribution = attr, options = opts)
+    if(isTRUE(labels) && !is.null(l$ref)){
+      map = leaflet::addTiles(map, url(l$ref), group = l$name
+                              ,attribution = attr, options = opts)
+    }
   }
-
-  map = htmlwidgets::prependContent(map, htmltools::tags$style(
-    ".esri-gray { filter: grayscale(1) contrast(1.1); }
-     .esri-dark { filter: invert(1) hue-rotate(180deg) grayscale(0.5) brightness(0.9); }"
-  ))
 
   base_names = gntLeaf_esri_basemap_names(default)
   map = leaflet::hideGroup(map, base_names[-1])

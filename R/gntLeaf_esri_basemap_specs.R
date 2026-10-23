@@ -11,34 +11,52 @@
 #' (note `{y}` before `{x}`). They load without an API key, including from
 #' HTML files opened locally (`file://`).
 #'
-#' The grayscale and dark variants reuse `World_Street_Map` tiles. Their
-#' look comes from a CSS `filter` that [gntLeaf_add_esri_basemaps()] applies
-#' through the `cls` class name:
-#' \itemize{
-#'   \item `esri-gray`: `grayscale(1) contrast(1.1)`
-#'   \item `esri-dark`: `invert(1) hue-rotate(180deg) grayscale(0.5) brightness(0.9)`
-#'   \item `esri-raw`, `esri-img`: no filter (class exists as a styling hook)
-#' }
+#' The gray and dark basemaps are Esri's own Light Gray and Dark Gray
+#' Canvas services (they replace the earlier CSS-filtered street tiles).
+#' Canvas basemaps ship as two services: an unlabeled `Base` and a
+#' `Reference` layer with place and street labels. When `ref` is set,
+#' [gntLeaf_add_esri_basemaps()] draws the reference tiles on top of the
+#' base in the same group, so both toggle together.
 #'
-#' To add a basemap, add an element here with a unique `name` and `cls`,
-#' add its key to the `default` choices in both functions, and add a CSS
-#' rule in [gntLeaf_add_esri_basemaps()] if it needs a filter.
+#' Canvas tiles are only cached to a lower zoom than the street and imagery
+#' services; `max_native` tells leaflet to stop requesting new tiles there
+#' and upscale instead (otherwise Esri returns "Map data not yet available"
+#' tiles). If you see those tiles at high zoom, lower `max_native`.
+#'
+#' To add a basemap, add an element here with a unique `name` and add its
+#' key to the `default` choices in [gntLeaf_esri_basemap_names()].
 #'
 #' @format A named list of 4 elements, each a list with:
 #' \describe{
 #'   \item{name}{character. Leaflet group name, shown in the layers control.}
 #'   \item{svc}{character. ArcGIS Online MapServer service path, e.g.
 #'     `"World_Street_Map"` or `"Canvas/World_Light_Gray_Base"`.}
-#'   \item{cls}{character. CSS class set on the tile layer via
-#'     `tileOptions(className = ...)`, used to target the CSS filter.}
+#'   \item{ref}{character or NULL. Optional reference (labels) service drawn
+#'     over `svc` in the same group.}
+#'   \item{max_native}{integer. Highest zoom the service has tiles for.}
 #' }
 #'
 #' @seealso [gntLeaf_add_esri_basemaps()], [gntLeaf_esri_basemap_names()]
 #'
 #' @keywords internal
 gntLeaf_esri_basemap_specs = list(
-  streets = list(name = "Streets",        svc = "World_Street_Map", cls = "esri-raw")
-  ,gray   = list(name = "Streets (gray)", svc = "World_Street_Map", cls = "esri-gray")
-  ,dark   = list(name = "Streets (dark)", svc = "World_Street_Map", cls = "esri-dark")
-  ,imagery = list(name = "Imagery",       svc = "World_Imagery",    cls = "esri-img")
+  streets = list(
+    name = "Streets", svc = "World_Street_Map"
+    ,ref = NULL, max_native = 19)
+  ,gray = list(
+    name = "Light Gray Canvas"
+    ,svc = "Canvas/World_Light_Gray_Base"
+    # ,ref = "Canvas/World_Light_Gray_Reference"
+    ,ref = NULL
+    ,max_native = 16)
+  ,dark = list(
+    name = "Dark Gray Canvas"
+    ,svc = "Canvas/World_Dark_Gray_Base"
+    # ,ref = "Canvas/World_Dark_Gray_Reference"
+    ,ref = NULL
+    ,max_native = 16)
+  ,imagery = list(
+    name = "Imagery", svc = "World_Imagery"
+    ,ref = NULL, max_native = 19)
 )
+
